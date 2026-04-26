@@ -18,10 +18,24 @@
     <div style="padding: 5rem 2rem 2rem;">
         <h1 id="welcomeTitle">¡Hola!</h1>
         <p>¿Qué quieres hacer hoy?</p>
+        <div class="card" id="noPartnerCard">
+            <h3>💞 Encuentra a tu pareja</h3>
+            <p>Aún no tienes una pareja vinculada. ¡Busca a tu persona especial!</p>
+            <button onclick="location.href='search.html'">Buscar Pareja</button>
+        </div>
+
+        <div class="card" id="hasPartnerCard" style="display: none;">
+            <h3>💌 Cartas de Amor</h3>
+            <p>Escribe algo lindo para tu pareja o mira lo que te han enviado.</p>
+            <button onclick="location.href='send_letter.html'">Enviar Carta 🚚</button>
+            <button onclick="location.href='view_letters.html'" style="margin-top: 0.5rem; background-color: var(--secondary-color);">Ver mis Cartas 📬</button>
+            <button onclick="location.href='chat.html'" style="margin-top: 0.5rem; background-color: #ff99ac;">Ir al Chat 💬</button>
+        </div>
+
         <div class="card">
-            <h3>💌 Enviar una Carta</h3>
-            <p>Escribe algo lindo para tu pareja.</p>
-            <button onclick="alert('Funcionalidad en desarrollo para la Versión Enamorado')">Crear Carta</button>
+            <h3>⛪ Iglesia</h3>
+            <p>Bodas digitales (Próximamente).</p>
+            <button onclick="alert('Esta función estará disponible muy pronto para celebrar su amor.')" style="background-color: #888;">Entrar</button>
         </div>
         <div class="card">
             <h3>🖼️ Tu Perfil</h3>
@@ -36,6 +50,11 @@
         else {
             document.getElementById('welcomeTitle').innerText = `¡Hola, ${user.username}!`;
             document.getElementById('userInfo').innerText = user.is_premium ? 'Plan: Enamorado 💖' : 'Plan: Gratuito';
+
+            if (user.partner_id) {
+                document.getElementById('noPartnerCard').style.display = 'none';
+                document.getElementById('hasPartnerCard').style.display = 'block';
+            }
         }
         document.getElementById('logoutBtn').addEventListener('click', (e) => {
             e.preventDefault();

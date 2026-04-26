@@ -21,9 +21,21 @@
         <p class="link-text"><a href="login.html">Volver al inicio</a></p>
     </div>
     <script>
-        document.getElementById('recoverForm').addEventListener('submit', (e) => {
+        document.getElementById('recoverForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            alert("Si el correo está registrado, recibirás un enlace de recuperación pronto.");
+            const email = document.getElementById('email').value;
+
+            try {
+                const response = await fetch('/api/recover-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                const data = await response.json();
+                alert(data.message);
+            } catch (error) {
+                alert("Error al conectar con el servidor.");
+            }
         });
     </script>
 </body>
