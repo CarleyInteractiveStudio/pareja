@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Cuenta - AmourApp</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Únete a nosotros</h2>
+        <form id="registerForm">
+            <div class="form-group">
+                <label>Nombre de Usuario</label>
+                <input type="text" id="username" required>
+            </div>
+            <div class="form-group">
+                <label>Correo Electrónico</label>
+                <input type="email" id="email" required>
+            </div>
+            <div class="form-group">
+                <label>Sexo</label>
+                <select id="gender" required>
+                    <option value="hombre">Hombre</option>
+                    <option value="mujer">Mujer</option>
+                    <option value="otro">Otro</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Fecha de Nacimiento</label>
+                <input type="date" id="birthdate" required>
+            </div>
+            <div class="form-group">
+                <label>Contraseña</label>
+                <input type="password" id="password" required>
+            </div>
+            <div class="form-group">
+                <label>Confirmar Contraseña</label>
+                <input type="password" id="confirmPassword" required>
+            </div>
+
+            <div class="math-challenge" id="mathSection">
+                <p id="mathQuestion">¿Cuánto es ...?</p>
+                <input type="number" id="mathAnswer" placeholder="Tu respuesta" required>
+            </div>
+
+            <button type="submit">Registrarse</button>
+        </form>
+        <p class="link-text">¿Ya tienes cuenta? <a href="login.html">Inicia sesión</a></p>
+    </div>
+    <script>
+        const n1 = Math.floor(Math.random() * 10) + 1;
+        const n2 = Math.floor(Math.random() * 10) + 1;
+        document.getElementById('mathQuestion').innerText = `¿Cuánto es ${n1} + ${n2}?`;
+
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const gender = document.getElementById('gender').value;
+            const birthdate = document.getElementById('birthdate').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const mathAnswer = document.getElementById('mathAnswer').value;
+
+            if (password !== confirmPassword) { alert("Las contraseñas no coinciden."); return; }
+
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password, gender, birthdate, mathAnswer, mathExpected })
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    alert("¡Registro exitoso! Ahora puedes iniciar sesión.");
+                    window.location.href = 'login.html';
+                } else { alert(data.message || "Error al registrarse"); }
+            } catch (error) { alert("Error de conexión."); }
+        });
+    </script>
+</body>
+</html>

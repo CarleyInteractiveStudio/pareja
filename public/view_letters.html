@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Cartas - AmourApp</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .letter-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            border: 2px solid #ffccd5;
+            margin-bottom: 2rem;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .letter-card:hover { transform: scale(1.02); }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        .modal-content {
+            background: #fff9f9;
+            padding: 3rem;
+            border-radius: 20px;
+            max-width: 90%;
+            width: 500px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(255,255,255,0.2);
+        }
+    </style>
+</head>
+<body style="display: block;">
+    <nav class="navbar">
+        <a href="dashboard.html" style="text-decoration: none; color: var(--primary-color); font-weight: bold;">← Volver</a>
+        <span style="font-weight: bold; color: var(--primary-color);">❤️ Mis Cartas</span>
+    </nav>
+
+    <div style="padding: 5rem 2rem 2rem;">
+        <div id="lettersList" style="max-width: 600px; margin: auto;">
+            <p>Cargando cartas...</p>
+        </div>
+    </div>
+
+    <div id="letterModal" class="modal">
+        <div class="modal-content">
+            <h2 id="modalSender">De: ...</h2>
+            <p id="modalBody" style="margin: 2rem 0; font-size: 1.2rem; font-style: italic;"></p>
+            <div id="ytPlayer" style="margin-top: 1rem;"></div>
+            <button onclick="closeModal()" style="margin-top: 2rem;">Cerrar Carta</button>
+        </div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('token');
+        const list = document.getElementById('lettersList');
+        const modal = document.getElementById('letterModal');
+
+        async function loadLetters() {
+            try {
+                const res = await fetch('/api/letters/received', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const letters = await res.json();
+
+                if (letters.length === 0) {
+                    list.innerHTML = '<p>No has recibido ninguna carta aún. ¡Dile a tu pareja que te escriba!</p>';
+                    return;
+                }
+
+                list.innerHTML = '';
+                letters.forEach(l => {
+                    const div = document.createElement('div');
+                    div.className = 'letter-card';
+
+                    const h3 = document.createElement('h3');
+                    h3.textContent = `💌 De: ${l.sender_name}`;
+
+                    const p = document.createElement('p');
+                    p.textContent = `Recibida el: ${new Date(l.sent_at).toLocaleDateString()}`;
+
+                    div.appendChild(h3);
+                    div.appendChild(p);
+                    div.onclick = () => openLetter(l);
+                    list.appendChild(div);
+                });
+            } catch (err) { console.error(err); }
+        }
+
+        function openLetter(letter) {
+            document.getElementById('modalSender').innerText = `De: ${letter.sender_name}`;
+            document.getElementById('modalBody').innerText = letter.content;
+
+            const ytPlayer = document.getElementById('ytPlayer');
+            if (letter.youtube_link) {
+                // Extraer ID de video de YouTube
+                const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+                const match = letter.youtube_link.match(regExp);
+                const videoId = (match && match[2].length == 11) ? match[2] : null;
+
+                if (videoId) {
+                    ytPlayer.innerHTML = `<iframe width="100%" height="200" src="https://www.youtube.com/embed/${videoId}?autoplay=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+                } else {
+                    ytPlayer.innerHTML = '';
+                }
+            } else {
+                ytPlayer.innerHTML = '';
+            }
+
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+            document.getElementById('ytPlayer').innerHTML = ''; // Detener música
+        }
+
+        loadLetters();
+    </script>
+</body>
+</html>

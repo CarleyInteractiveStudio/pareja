@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscar Pareja - AmourApp</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body style="display: block;">
+    <nav class="navbar">
+        <a href="dashboard.html" style="text-decoration: none; color: var(--primary-color); font-weight: bold;">← Volver</a>
+        <span style="font-weight: bold; color: var(--primary-color);">❤️ Buscar Pareja</span>
+    </nav>
+
+    <div style="padding: 5rem 2rem 2rem;">
+        <div class="card">
+            <h3>Encuentra a tu persona especial</h3>
+            <p>Escribe su nombre de usuario:</p>
+            <input type="text" id="searchInput" placeholder="Ej: maria123" style="margin-top: 1rem;">
+            <div id="resultsList" style="margin-top: 1rem;"></div>
+        </div>
+
+        <div class="card" id="pendingRequests" style="display: none;">
+            <h3>Solicitudes Pendientes</h3>
+            <div id="requestsList"></div>
+        </div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('token');
+        if (!token) window.location.href = 'login.html';
+
+        const searchInput = document.getElementById('searchInput');
+        const resultsList = document.getElementById('resultsList');
+        const requestsList = document.getElementById('requestsList');
+        const pendingSection = document.getElementById('pendingRequests');
+
+        // Búsqueda en tiempo real
+        searchInput.addEventListener('input', async (e) => {
+            const query = e.target.value;
+            if (query.length < 2) {
+                resultsList.innerHTML = '';
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/users/search?q=${query}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const users = await res.json();
+
+                resultsList.innerHTML = '';
+                users.forEach(user => {
+                    const div = document.createElement('div');
+                    div.style.cssText = "display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; border-bottom: 1px solid #eee;";
+
+                    const span = document.createElement('span');
+                    span.textContent = user.username;
+
+                    const btn = document.createElement('button');
+                    btn.textContent = 'Enviar Solicitud';
+                    btn.style.cssText = "padding: 0.5rem; width: auto; margin: 0; font-size: 0.8rem;";
+                    btn.onclick = () => sendRequest(user.id);
+
+                    div.appendChild(span);
+                    div.appendChild(btn);
+                    resultsList.appendChild(div);
+                });
+            } catch (err) { console.error(err); }
+        });
+
+        async function sendRequest(receiverId) {
+            try {
+                const res = await fetch('/api/partner-requests/send', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ receiverId })
+                });
+                const data = await res.json();
+                alert(data.message);
+            } catch (err) { alert("Error al enviar solicitud."); }
+        }
+
+        async function loadRequests() {
+            try {
+                const res = await fetch('/api/partner-requests/pending', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const requests = await res.json();
+
+                requestsList.innerHTML = '';
+                if (requests.length > 0) {
+                    pendingSection.style.display = 'block';
+                    requests.forEach(req => {
+                        const div = document.createElement('div');
+                        div.style.cssText = "display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; border-bottom: 1px solid #eee;";
+
+                        const span = document.createElement('span');
+                        span.textContent = `${req.username} quiere ser tu pareja`;
+
+                        const actions = document.createElement('div');
+
+                        const accBtn = document.createElement('button');
+                        accBtn.textContent = 'Aceptar';
+                        accBtn.style.cssText = "padding: 0.5rem; width: auto; margin: 0; background: #4CAF50; font-size: 0.8rem;";
+                        accBtn.onclick = () => respond(req.id, 'accept');
+
+                        const rejBtn = document.createElement('button');
+                        rejBtn.textContent = 'Rechazar';
+                        rejBtn.style.cssText = "padding: 0.5rem; width: auto; margin: 0; background: #f44336; font-size: 0.8rem;";
+                        rejBtn.onclick = () => respond(req.id, 'reject');
+
+                        actions.appendChild(accBtn);
+                        actions.appendChild(rejBtn);
+                        div.appendChild(span);
+                        div.appendChild(actions);
+                        requestsList.appendChild(div);
+                    });
+                } else {
+                    pendingSection.style.display = 'none';
+                }
+            } catch (err) { console.error(err); }
+        }
+
+        async function respond(requestId, action) {
+            try {
+                const res = await fetch('/api/partner-requests/respond', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ requestId, action })
+                });
+                const data = await res.json();
+                alert(data.message);
+                if (action === 'accept') window.location.href = 'dashboard.html';
+                else loadRequests();
+            } catch (err) { alert("Error al responder."); }
+        }
+
+        loadRequests();
+    </script>
+</body>
+</html>
