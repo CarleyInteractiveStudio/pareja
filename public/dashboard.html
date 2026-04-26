@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Control - AmourApp</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body style="display: block;">
+    <nav class="navbar">
+        <span style="font-weight: bold; color: var(--primary-color);">❤️ AmourApp</span>
+        <div>
+            <span id="userInfo" style="margin-right: 1rem; font-size: 0.9rem;"></span>
+            <a href="premium.html" class="premium-badge" style="text-decoration: none;">💎 Ser Enamorado</a>
+            <a href="#" id="logoutBtn" style="margin-left: 1rem; text-decoration: none; color: var(--text-color);">Salir</a>
+        </div>
+    </nav>
+    <div style="padding: 5rem 2rem 2rem;">
+        <h1 id="welcomeTitle">¡Hola!</h1>
+        <p>¿Qué quieres hacer hoy?</p>
+        <div class="card">
+            <h3>💌 Enviar una Carta</h3>
+            <p>Escribe algo lindo para tu pareja.</p>
+            <button onclick="alert('Funcionalidad en desarrollo para la Versión Enamorado')">Crear Carta</button>
+        </div>
+        <div class="card">
+            <h3>🖼️ Tu Perfil</h3>
+            <p>Personaliza cómo te ves.</p>
+            <button style="background-color: var(--secondary-color);">Editar Perfil</button>
+        </div>
+    </div>
+    <script>
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!token || !user) { window.location.href = 'login.html'; }
+        else {
+            document.getElementById('welcomeTitle').innerText = `¡Hola, ${user.username}!`;
+            document.getElementById('userInfo').innerText = user.is_premium ? 'Plan: Enamorado 💖' : 'Plan: Gratuito';
+        }
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.clear();
+            window.location.href = 'login.html';
+        });
+    </script>
+</body>
+</html>

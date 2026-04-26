@@ -1,0 +1,27 @@
+:root {
+    --primary-color: #ff4d6d;
+    --secondary-color: #ff758f;
+    --bg-color: #fff0f3;
+    --text-color: #590d22;
+    --white: #ffffff;
+    --shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    --transition: all 0.3s ease;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+body { background-color: var(--bg-color); color: var(--text-color); display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow-x: hidden; }
+.container { background: var(--white); padding: 2rem; border-radius: 20px; box-shadow: var(--shadow); width: 100%; max-width: 400px; text-align: center; animation: fadeIn 0.8s ease-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+h1 { margin-bottom: 1.5rem; color: var(--primary-color); font-size: 2rem; }
+h2 { margin-bottom: 1rem; font-size: 1.5rem; }
+.form-group { margin-bottom: 1rem; text-align: left; }
+label { display: block; margin-bottom: 0.5rem; font-weight: 600; }
+input, select { width: 100%; padding: 0.8rem; border: 2px solid #ffccd5; border-radius: 10px; outline: none; transition: var(--transition); }
+input:focus { border-color: var(--primary-color); }
+button { width: 100%; padding: 1rem; background-color: var(--primary-color); color: white; border: none; border-radius: 10px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: var(--transition); margin-top: 1rem; }
+button:hover { background-color: var(--secondary-color); transform: scale(1.02); }
+.link-text { margin-top: 1rem; font-size: 0.9rem; }
+.link-text a { color: var(--primary-color); text-decoration: none; font-weight: bold; }
+.navbar { position: fixed; top: 0; width: 100%; background: var(--white); padding: 1rem; display: flex; justify-content: space-between; box-shadow: var(--shadow); align-items: center; }
+.card { background: white; padding: 1.5rem; border-radius: 15px; margin-top: 1.5rem; text-align: left; border: 1px solid #ffccd5; }
+.premium-badge { background: gold; color: #333; padding: 0.2rem 0.5rem; border-radius: 5px; font-size: 0.8rem; font-weight: bold; }
+.math-challenge { background: #fff5f5; padding: 1rem; border-radius: 10px; border: 1px dashed var(--primary-color); margin-bottom: 1rem; }
